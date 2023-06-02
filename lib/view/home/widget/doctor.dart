@@ -23,59 +23,62 @@ class _DoctorWidgetState extends ConsumerState<DoctorWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: ref.watch(homeVM).doctor.length,
-      itemBuilder: (context, index) {
-        final item = ref.watch(homeVM).doctor[index];
-        return Card(
-          elevation: 4,
-          shadowColor: primaryColor,
-          child: Column(
-            children: [
-              ListTile(
-                trailing: CircleAvatar(
-                  child: CachedNetworkImage(
-                    imageUrl: item.image ?? "",
-                    placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                  ),
-                ),
-                title: Text(item.name ?? "",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    )),
-                subtitle: Text(
-                  item.email ?? "",
-                ),
-              ),
-              Row(
-                children: [
-                  SizedBox(width: 5),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      icon: Icon(Icons.chat),
-                      onPressed: () {},
-                      label: Text('Chat'),
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: ref.watch(homeVM).patient.length,
+        itemBuilder: (context, index) {
+          final item = ref.watch(homeVM).patient[index];
+          return Card(
+            elevation: 4,
+            shadowColor: primaryColor,
+            child: Column(
+              children: [
+                ListTile(
+                  trailing: CircleAvatar(
+                    child: CachedNetworkImage(
+                      imageUrl: item.image ?? "",
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
                   ),
-                  SizedBox(width: 4),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      icon: Icon(Icons.video_call),
-                      onPressed: () {
-                        Navigator.pushNamed(context, VideoView.route);
-                      },
-                      label: Text('video'),
-                    ),
+                  title: Text(item.name ?? "",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      )),
+                  subtitle: Text(
+                    item.email ?? "",
                   ),
-                  SizedBox(width: 5),
-                ],
-              )
-            ],
-          ),
-        );
-      },
+                ),
+                Row(
+                  children: [
+                    SizedBox(width: 5),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        icon: Icon(Icons.chat),
+                        onPressed: () {},
+                        label: Text('Chat'),
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        icon: Icon(Icons.video_call),
+                        onPressed: () {
+                          Navigator.pushNamed(context, VideoView.route);
+                        },
+                        label: Text('video'),
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                  ],
+                )
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

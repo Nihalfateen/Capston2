@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 class Constants {
   const Constants._();
-  static const String apiPath = 'http://amrsadoma-001-site1.dtempurl.com/api/';
+  static const String apiPath = 'http://amrmohamed171996-001-site1.itempurl.com/api/';
   static const String fcmTokenPrefKey = "FCM_TOKEN";
   static const String tokenPrefKey = "TOKEN";
   static const String roleIdPrefKey = "ROLE_ID";

@@ -1,14 +1,14 @@
-
 import 'package:capstone/view_model/home_view_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/constants.dart';
 import '../../../core/utils/cache_helper.dart';
 import '../../../model/data_source/remote/profile.dart';
 import '../../../model/model/home_data.dart';
-import '../../../view_model/register_view_model.dart';
+
 final patientName = CacheHelper.getPrefs(key: Constants.patientName);
 final _firestore = FirebaseFirestore.instance;
 String username = patientName;
@@ -18,12 +18,12 @@ String? messageText;
 List<Doctort> doctor = [];
 List<Patients> patient = [];
 final userType = CacheHelper.getPrefs(key: Constants.userData);
-String? user ;
+String? user;
 
 class ChatterScreen extends ConsumerStatefulWidget {
   static const String route = 'chatter_screen';
-  String?name;
-   ChatterScreen({super.key,this.name});
+  String? name;
+  ChatterScreen({super.key, this.name});
   @override
   _ChatterScreenState createState() => _ChatterScreenState();
 }
@@ -35,10 +35,10 @@ class _ChatterScreenState extends ConsumerState<ChatterScreen> {
 
   @override
   void initState() {
-    super.initState();
-     getCurrentUser();
-     getMessages();
+    getCurrentUser();
+    getMessages();
     Future.delayed(Duration.zero, () => ref.read(homeVM).getHomeData());
+    super.initState();
   }
 
   void getCurrentUser() async {
@@ -46,20 +46,19 @@ class _ChatterScreenState extends ConsumerState<ChatterScreen> {
     final List<Doctort> doctor = await getHomeDataService();
     final userType = CacheHelper.getPrefs(key: Constants.userData);
     final userId = CacheHelper.getPrefs(key: Constants.id);
-      if (userType != Constants.doctor) {
-        type = Constants.patient;
+    if (userType != Constants.doctor) {
+      type = Constants.patient;
+    }
+    doctor.map((doctor1) {
+      if (doctor1.id == userId) {
+        user = doctor1.name;
       }
-      doctor.map((doctor1) {
-        if (doctor1.id== userId) {
-user=doctor1.name;
-
-        }
-      }
-      ).toList();
+    }).toList();
   }
-  void getMessages()async{
-    final messages=await _firestore.collection('messages').get();
-    for(var message in messages.docs){
+
+  void getMessages() async {
+    final messages = await _firestore.collection('messages').get();
+    for (var message in messages.docs) {
       print(message.data);
     }
   }
@@ -104,10 +103,7 @@ user=doctor1.name;
               children: <Widget>[
                 Text(
                   'Chat Screen',
-                  style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      color: Colors.deepPurple),
+                  style: TextStyle(fontFamily: 'Poppins', fontSize: 16, color: Colors.deepPurple),
                 ),
               ],
             ),
@@ -119,7 +115,6 @@ user=doctor1.name;
           )
         ],
       ),
-
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -138,19 +133,16 @@ user=doctor1.name;
                     color: Colors.white,
                     elevation: 5,
                     child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 8.0, top: 2, bottom: 2),
+                      padding: const EdgeInsets.only(left: 8.0, top: 2, bottom: 2),
                       child: TextField(
                         onChanged: (value) {
                           messageText = value;
                         },
                         controller: chatMsgTextController,
                         decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 20.0),
+                          contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                           hintText: 'Type your message here...',
-                          hintStyle:
-                              TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                          hintStyle: TextStyle(fontFamily: 'Poppins', fontSize: 14),
                           border: InputBorder.none,
                         ),
                       ),
@@ -167,7 +159,7 @@ user=doctor1.name;
                         'text': messageText,
                         'timestamp': DateTime.now().millisecondsSinceEpoch,
                         'senderemail': email,
-                        'receiver':username2
+                        'receiver': username2
                       });
                       _firestore.collection('testm').get();
                       print('2222222$username');
@@ -193,20 +185,18 @@ user=doctor1.name;
   }
 }
 
-class ChatStream extends ConsumerStatefulWidget{
+class ChatStream extends ConsumerStatefulWidget {
   @override
   ConsumerState<ChatStream> createState() => _ChatStreamState();
 }
 
-class _ChatStreamState extends  ConsumerState<ChatStream> {
+class _ChatStreamState extends ConsumerState<ChatStream> {
   final patientName = CacheHelper.getPrefs(key: Constants.patientName);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream:
-          _firestore.collection('messages').orderBy('timestamp').snapshots(),
-      builder: (context,AsyncSnapshot snapshot){
-
+      stream: _firestore.collection('messages').orderBy('timestamp').snapshots(),
+      builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           final messages = snapshot.data.docs;
           List<MessageBubble> messageWidgets = [];
@@ -215,16 +205,16 @@ class _ChatStreamState extends  ConsumerState<ChatStream> {
             final msgSender = message.data()['sender'];
             final msgReceiver = message.data()['receiver'];
             // final msgSenderEmail = message.data['senderemail'];
-final currentUser=patientName;
-final user='doctor';
-print("=============$patientName");
+            final currentUser = patientName;
+            final user = 'doctor';
+            print("=============$patientName");
             // print('MSG'+msgSender + '  CURR'+currentUser);
             final msgBubble = MessageBubble(
                 msgText: msgText,
                 msgSender: msgSender,
                 msgReceiver: msgReceiver,
-                user2: user==msgReceiver,
-                user: currentUser==msgSender );
+                user2: user == msgReceiver,
+                user: currentUser == msgSender);
             print('===$msgSender');
             messageWidgets.add(msgBubble);
           }
@@ -237,8 +227,7 @@ print("=============$patientName");
           );
         } else {
           return Center(
-            child:
-                CircularProgressIndicator(backgroundColor: Colors.deepPurple),
+            child: CircularProgressIndicator(backgroundColor: Colors.deepPurple),
           );
         }
       },
@@ -252,22 +241,25 @@ class MessageBubble extends StatelessWidget {
   final String msgReceiver;
   final bool user;
   final bool user2;
-  MessageBubble({ required this.msgText, required this.msgSender, required this.user,required this.msgReceiver,required this.user2});
+  MessageBubble(
+      {required this.msgText,
+      required this.msgSender,
+      required this.user,
+      required this.msgReceiver,
+      required this.user2});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
-        crossAxisAlignment:
-            user? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               msgSender,
-              style: TextStyle(
-                  fontSize: 13, fontFamily: 'Poppins', color: Colors.black87),
+              style: TextStyle(fontSize: 13, fontFamily: 'Poppins', color: Colors.black87),
             ),
           ),
           Material(
@@ -275,9 +267,9 @@ class MessageBubble extends StatelessWidget {
               bottomLeft: Radius.circular(50),
               topLeft: user ? Radius.circular(50) : Radius.circular(0),
               bottomRight: Radius.circular(50),
-              topRight: user? Radius.circular(50) : Radius.circular(0),
+              topRight: user ? Radius.circular(50) : Radius.circular(0),
             ),
-            color: user? Colors.blue : Colors.white,
+            color: user ? Colors.blue : Colors.white,
             elevation: 5,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -296,20 +288,19 @@ class MessageBubble extends StatelessWidget {
     );
   }
 }
-class Chat extends ConsumerStatefulWidget{
+
+class Chat extends ConsumerStatefulWidget {
   @override
   ConsumerState<Chat> createState() => _ChatState();
 }
 
-class _ChatState extends  ConsumerState<Chat> {
+class _ChatState extends ConsumerState<Chat> {
   final patientName = CacheHelper.getPrefs(key: Constants.patientName);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream:
-      _firestore.collection('testm').snapshots(),
-      builder: (context,AsyncSnapshot snapshot){
-
+      stream: _firestore.collection('testm').snapshots(),
+      builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           final messages = snapshot.data.docs;
           List<Message> messageWidgets = [];
@@ -317,12 +308,10 @@ class _ChatState extends  ConsumerState<Chat> {
             final msgText = message.data()['message'];
             final msgSender = message.data()['sender'];
             // final msgSenderEmail = message.data['senderemail'];
-            final currentUser='doctor';
+            final currentUser = 'doctor';
             // print('MSG'+msgSender + '  CURR'+currentUser);
-            final msgBubble = Message(
-                msgText: msgText,
-                msgSender: msgSender,
-                user: currentUser==msgSender );
+            final msgBubble =
+                Message(msgText: msgText, msgSender: msgSender, user: currentUser == msgSender);
             print('===$msgSender');
             messageWidgets.add(msgBubble);
           }
@@ -335,8 +324,7 @@ class _ChatState extends  ConsumerState<Chat> {
           );
         } else {
           return Center(
-            child:
-            CircularProgressIndicator(backgroundColor: Colors.deepPurple),
+            child: CircularProgressIndicator(backgroundColor: Colors.deepPurple),
           );
         }
       },
@@ -348,31 +336,33 @@ class Message extends StatelessWidget {
   final String msgText;
   final String msgSender;
   final bool user;
-  Message({ required this.msgText, required this.msgSender, required this.user,});
+  Message({
+    required this.msgText,
+    required this.msgSender,
+    required this.user,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
-        crossAxisAlignment:
-         CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               msgSender,
-              style: TextStyle(
-                  fontSize: 13, fontFamily: 'Poppins', color: Colors.black87),
+              style: TextStyle(fontSize: 13, fontFamily: 'Poppins', color: Colors.black87),
             ),
           ),
           Material(
             borderRadius: BorderRadius.only(
               bottomLeft: user ? Radius.circular(50) : Radius.circular(0),
-              topRight: user? Radius.circular(50) : Radius.circular(50),
-              bottomRight: user? Radius.circular(50) : Radius.circular(50),
+              topRight: user ? Radius.circular(50) : Radius.circular(50),
+              bottomRight: user ? Radius.circular(50) : Radius.circular(50),
             ),
-            color: user? Colors.white : Colors.blue,
+            color: user ? Colors.white : Colors.blue,
             elevation: 5,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),

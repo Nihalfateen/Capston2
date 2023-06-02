@@ -1,5 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:capstone/core/theme/style.dart';
+import 'package:capstone/core/utils/log.dart';
 import 'package:capstone/view/home/widget/doctor.dart';
 import 'package:capstone/view/home/widget/patient.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,8 @@ class UserType extends ConsumerStatefulWidget {
 class _UserTypeState extends ConsumerState<UserType> {
   @override
   Widget build(BuildContext context) {
-    return ref.watch(homeVM).type == Constants.doctor
+    Log.w('UserType build ${ref.watch(homeVM).type}');
+    return ref.watch(homeVM).type.toLowerCase() == Constants.doctor.toLowerCase()
         ? DoctorWidget()
         : PatientWidget();
   }

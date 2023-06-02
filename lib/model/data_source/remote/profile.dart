@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:capstone/model/model/auterization.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,11 +21,7 @@ Future<LoginStatus> loginService(String phone, String password) async {
         // "dev_type": "ios",
         // "dev_token": "ssssssss"
       }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Api-Lang': 'ar'
-      },
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Api-Lang': 'ar'},
     );
 
     if (response.statusCode == 200) {
@@ -32,18 +29,16 @@ Future<LoginStatus> loginService(String phone, String password) async {
       if (data.status == 1) {
         Log.w(response.body);
         CacheHelper.savePrefs(
-            key: Constants.tokenPrefKey,
-            value: data.data?.apiToken.toString() ?? "");
+            key: Constants.tokenPrefKey, value: data.data?.apiToken.toString() ?? "");
         CacheHelper.savePrefs(
           key: Constants.type,
-          value: autherizationFromMap(response.body).data?.type ??
-              Constants.doctor,
+          value: autherizationFromMap(response.body).data?.type?.toLowerCase() ?? Constants.doctor,
         );
         CacheHelper.savePrefs(key: Constants.userData, value: response.body);
         CacheHelper.savePrefs(
-            key: Constants.id,
-            value: autherizationFromMap(response.body).data?.id);
-        CacheHelper.savePrefs(key: Constants.patientName, value: autherizationFromMap(response.body).data?.name);
+            key: Constants.id, value: autherizationFromMap(response.body).data?.id);
+        CacheHelper.savePrefs(
+            key: Constants.patientName, value: autherizationFromMap(response.body).data?.name);
 
         return LoginStatus.success;
       } else {
@@ -67,19 +62,6 @@ Future<LoginStatus> registerService(
   String password,
 ) async {
   try {
-    Log.d(json.encode({
-      "user_type?": "patient|doctor",
-      "user_type": userType,
-      "name": name,
-      "email": email,
-      "phone": phone,
-      "password": password,
-      "password_confirmation": password,
-      "image": "",
-      "syndicate_card_image": "",
-      "specialization": specialization,
-      "description": ""
-    }));
     final http.Response response = await http.post(
       Uri.parse("${Constants.apiPath}register"),
       body: json.encode({
@@ -95,11 +77,7 @@ Future<LoginStatus> registerService(
         "specialization": specialization,
         "description": ""
       }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Api-Lang': 'ar'
-      },
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Api-Lang': 'ar'},
     );
     Log.w(response.statusCode.toString());
     Log.w(response.body.toString());
@@ -116,7 +94,7 @@ Future<LoginStatus> registerService(
 
 Future<List<Doctort>> getHomeDataService() async {
   try {
-    final response = await http.get(Uri.parse('${Constants.apiPath}/homeapp'));
+    final response = await http.get(Uri.parse('${Constants.apiPath}homeapp'));
 
     if (response.statusCode == HttpStatus.ok) {
       return mainDataFromJson(response.body).data ?? [];

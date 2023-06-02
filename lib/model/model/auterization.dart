@@ -4,8 +4,7 @@
 
 import 'dart:convert';
 
-Autherization autherizationFromMap(String str) =>
-    Autherization.fromJson(json.decode(str));
+Autherization autherizationFromMap(String str) => Autherization.fromJson(json.decode(str));
 
 String autherizationToMap(Autherization data) => json.encode(data.toJson());
 
@@ -23,7 +22,7 @@ class Autherization {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['status'] = status;
     data['message'] = message;
     if (this.data != null) {
@@ -43,17 +42,19 @@ class Data {
   String? apiToken;
   String? image;
   String? createdAt;
-
-  Data(
-      {required this.id,
-      this.name,
-      this.email,
-      this.phone,
-      this.isAccept,
-      this.type,
-      this.apiToken,
-      this.image,
-      this.createdAt});
+  DoctorPatient? doctor;
+  Data({
+    required this.id,
+    this.name,
+    this.email,
+    this.phone,
+    this.isAccept,
+    this.type,
+    this.apiToken,
+    this.image,
+    this.createdAt,
+    this.doctor,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -65,10 +66,11 @@ class Data {
     apiToken = json['api_token'];
     image = json['image'];
     createdAt = json['created_at'];
+    doctor = json['doctor'] != null ? DoctorPatient.fromJson(json['doctor']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
     data['email'] = email;
@@ -77,6 +79,31 @@ class Data {
     data['type'] = type;
     data['api_token'] = apiToken;
     data['image'] = image;
+    data['created_at'] = createdAt;
+    return data;
+  }
+}
+
+class DoctorPatient {
+  int? id;
+  String? name;
+  String? phone;
+  String? createdAt;
+
+  DoctorPatient({this.id, this.name, this.phone, this.createdAt});
+
+  DoctorPatient.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    phone = json['phone'];
+    createdAt = json['created_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['phone'] = phone;
     data['created_at'] = createdAt;
     return data;
   }
